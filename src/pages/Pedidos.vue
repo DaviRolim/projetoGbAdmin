@@ -17,11 +17,11 @@
         <th>Pedido</th>
         <th>Observação</th>
         <th>Total</th>
-        <th>Estado</th>
+        <th>Status</th>
       </tr>
     </thead>
     <tbody>
-      <tr v-for="(item, index) in listaPedidos" :key="index">
+      <tr :class="colorStatus(item)" v-for="(item, index) in listaPedidos" :key="index">
         <td>{{item.date}}</td>
         <td>{{getNomeFromEmail(item.email)}}</td>
         <td>
@@ -29,7 +29,11 @@
         </td>
         <td>{{item.observacao}}</td>
         <td>{{item.vlTotal}}</td>
-        <td>Aguardando Confirmação</td>
+        <td class="btn-group">
+          <button class="btn btn-danger" @click="atualizaStatus(item, 'aguardando')">Aguardando</button>
+          <button class="btn btn-info" @click="atualizaStatus(item, 'fazendo')">Fazendo</button>
+          <button class="btn btn-success" @click="atualizaStatus(item, 'finalizado')">Finalizado</button>
+        </td>
       </tr>
     </tbody>
   </table>
@@ -63,6 +67,21 @@ export default {
   methods: {
     getNomeFromEmail(nome) {
       return nome.split('@')[0]
+    },
+    colorStatus (item) {
+      if (item.estado === 'Aguardando confirmação') {
+        console.log(item.estado)
+        return 'text-danger'
+      } else if (item.estado === 'Pedido em andamento') {
+        return 'text-info'
+      } else if (item.estado === 'Finalizado') {
+        return 'text-success'
+      }
+    },
+    atualizaStatus(item, status) {
+      // atualizar o status
+      console.log(item)
+      console.log(status)
     }
   }
 }
@@ -71,5 +90,9 @@ export default {
 <style>
   .painel {
     padding: 3%;
+  }
+  td {
+    vertical-align: middle;
+    text-align: justify;
   }
 </style>
