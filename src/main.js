@@ -6,7 +6,6 @@ import { routes } from './routes';
 import firebase from 'firebase'
 import lodash from 'lodash'
 
-
 Vue.use(VueRouter);
 Vue.use(axios);
 Vue.use(lodash);
