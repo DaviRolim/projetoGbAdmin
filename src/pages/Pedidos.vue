@@ -4,10 +4,6 @@
     <div class="panel panel-warning">
   <!-- Default panel contents -->
       <div class="panel-heading">Pedidos GB</div>
-      <div class="panel-body">
-        <p>...</p>
-      </div>
-
       <!-- List group -->
 <table class="table table-condensed">
     <thead>
@@ -30,9 +26,9 @@
         <td>{{item.observacao}}</td>
         <td>{{item.vlTotal}}</td>
         <td class="btn-group">
-          <button class="btn btn-danger" @click="atualizaStatus(item, 'aguardando')">Aguardando</button>
-          <button class="btn btn-info" @click="atualizaStatus(item, 'fazendo')">Fazendo</button>
-          <button class="btn btn-success" @click="atualizaStatus(item, 'finalizado')">Finalizado</button>
+          <button class="btn btn-danger" @click="atualizaStatus(item, 'Aguardando confirmação')">Aguardando</button>
+          <button class="btn btn-info" @click="atualizaStatus(item, 'Pedido em andamento')">Fazendo</button>
+          <button class="btn btn-success" @click="atualizaStatus(item, 'Finalizado')">Finalizado</button>
         </td>
       </tr>
     </tbody>
@@ -44,6 +40,8 @@
 
 <script>
 import axios from 'axios'
+import firebase from 'firebase'
+import lodash from 'lodash'
 export default {
   data () {
     return {
@@ -51,22 +49,30 @@ export default {
     }
   },
   mounted () {
-    // this.$db.ref('pedidos').orderByChild('userId').equalTo(this.$user.uid).on('value', data => {
-    //   const obj = data.val()
-    //   this.listaHistorico = this.$_.map(obj, (pedidos, index) => {
-    //     return pedidos
-    //   })
-    // })
-    axios.get('/pedidos.json')
-    .then(res => {
-          console.log(res.data)
-          this.listaPedidos = res.data
-        })
-        .catch(error => console.log(error))
+    firebase.database().ref('pedidos').orderByChild('date').on('value', data => {
+      const obj = data.val()
+      this.listaPedidos = lodash.map(obj, (pedido, index) => {
+        pedido.id = index
+        return pedido
+      })
+      this.listaPedidos.reverse()
+      console.log(this.listaPedidos)
+    })
+    // axios.get('/pedidos.json')
+    // .then(res => {
+    //       console.log(res.data.name)
+    //       this.listaPedidos = res.data
+    //       this.listaPedidos.reverse()
+    //     })
+    //     .catch(error => console.log(error))
   },
   methods: {
     getNomeFromEmail(nome) {
-      return nome.split('@')[0]
+      if (nome) {
+        return nome.split('@')[0]
+      } else {
+        return ''
+      }
     },
     colorStatus (item) {
       if (item.estado === 'Aguardando confirmação') {
@@ -79,9 +85,10 @@ export default {
       }
     },
     atualizaStatus(item, status) {
-      // atualizar o status
       console.log(item)
       console.log(status)
+      item.estado = status
+      firebase.database().ref('pedidos/' + item.id).update(item)
     }
   }
 }
