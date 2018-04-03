@@ -17,7 +17,7 @@
       </tr>
     </thead>
     <tbody>
-      <tr :class="colorStatus(item)" v-for="(item, index) in listaPedidos" :key="index">
+      <tr :class="colorStatus(item)" v-for="(item, index) in getListaPedidos" :key="index">
         <td>{{item.date}}</td>
         <td>{{getNomeFromEmail(item.email)}}</td>
         <td>
@@ -42,29 +42,28 @@
 import axios from 'axios'
 import firebase from 'firebase'
 import lodash from 'lodash'
+import {mapGetters, mapActions} from 'vuex'
 export default {
   data () {
     return {
       listaPedidos: []
     }
   },
+  computed: {
+    ...mapGetters('pedidos', [
+      'getListaPedidos'
+    ])
+  },
   mounted () {
-    firebase.database().ref('pedidos').orderByChild('date').on('value', data => {
-      const obj = data.val()
-      this.listaPedidos = lodash.map(obj, (pedido, index) => {
-        pedido.id = index
-        return pedido
-      })
-      this.listaPedidos.reverse()
-      console.log(this.listaPedidos)
-    })
-    // axios.get('/pedidos.json')
-    // .then(res => {
-    //       console.log(res.data.name)
-    //       this.listaPedidos = res.data
-    //       this.listaPedidos.reverse()
-    //     })
-    //     .catch(error => console.log(error))
+    // firebase.database().ref('pedidos').orderByChild('date').on('value', data => {
+    //   const obj = data.val()
+    //   this.listaPedidos = lodash.map(obj, (pedido, index) => {
+    //     pedido.id = index
+    //     return pedido
+    //   })
+    //   this.listaPedidos.reverse()
+    // })
+    this.loadState()
   },
   methods: {
     getNomeFromEmail(nome) {
@@ -74,6 +73,9 @@ export default {
         return ''
       }
     },
+    ...mapActions('pedidos', [
+      'loadState'
+    ]),
     colorStatus (item) {
       if (item.estado === 'Aguardando confirmação') {
         console.log(item.estado)

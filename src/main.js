@@ -5,10 +5,21 @@ import VueRouter from 'vue-router';
 import { routes } from './routes';
 import firebase from 'firebase'
 import lodash from 'lodash'
+import Vuex from 'vuex'
+import pedidos from './store/pedidos'
+
 
 Vue.use(VueRouter);
 Vue.use(axios);
 Vue.use(lodash);
+Vue.use(Vuex);
+
+const store = new Vuex.Store({
+  modules: {
+    pedidos
+  }
+})
+
 
 axios.defaults.baseURL = 'https://projetogb-16c2d.firebaseio.com'
 
@@ -32,5 +43,6 @@ firebase.initializeApp(config)
 new Vue({
   el: '#app',
   router,
+  store,
   render: h => h(App)
 })
