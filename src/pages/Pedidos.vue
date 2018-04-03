@@ -55,14 +55,6 @@ export default {
     ])
   },
   mounted () {
-    // firebase.database().ref('pedidos').orderByChild('date').on('value', data => {
-    //   const obj = data.val()
-    //   this.listaPedidos = lodash.map(obj, (pedido, index) => {
-    //     pedido.id = index
-    //     return pedido
-    //   })
-    //   this.listaPedidos.reverse()
-    // })
     this.loadState()
   },
   methods: {
@@ -87,8 +79,6 @@ export default {
       }
     },
     atualizaStatus(item, status) {
-      console.log(item)
-      console.log(status)
       item.estado = status
       firebase.database().ref('pedidos/' + item.id).update(item)
     }
